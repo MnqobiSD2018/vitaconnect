@@ -1,0 +1,113 @@
+[
+  {
+    "title": "Harare City Marathon 2026",
+    "slug": "harare-city-marathon-2026",
+    "description": "The flagship road race in Harare with full marathon, half marathon, 10km and family fun run categories.",
+    "date": "September 13, 2026",
+    "time": "05:30 AM - 12:00 PM",
+    "startsAt": "2026-09-13T03:30:00.000Z",
+    "endsAt": "2026-09-13T10:00:00.000Z",
+    "location": "Harare Sports Club, Harare",
+    "category": "Sports",
+    "image": "https://images.unsplash.com/photo-1502224562085-639556652f33?auto=format&fit=crop&w=1200&q=80",
+    "ticketTiers": [
+      { "name": "42.2km Full Marathon", "price": 25, "currency": "USD", "description": "Includes official race timing bib chip, technical running t-shirt, finisher medal, and goodie bag.", "available": 150 },
+      { "name": "21.1km Half Marathon", "price": 20, "currency": "USD", "description": "Includes official race timing bib chip, technical running t-shirt, finisher medal, and goodie bag.", "available": 300 },
+      { "name": "10km Power Run", "price": 15, "currency": "USD", "description": "Includes official race timing bib chip, running t-shirt, and finisher medal.", "available": 500 },
+      { "name": "5km Fun Run & Walk", "price": 10, "currency": "USD", "description": "Includes official race t-shirt and finisher ribbon. Perfect for families.", "available": 800 }
+    ],
+    "customFields": [
+      { "name": "gender", "label": "Gender", "type": "select", "required": true, "options": ["Male", "Female", "Prefer not to say"] },
+      { "name": "age", "label": "Age on Race Day", "type": "text", "required": true },
+      { "name": "tshirtSize", "label": "Running T-Shirt Size", "type": "select", "required": true, "options": ["XS", "S", "M", "L", "XL", "XXL"] },
+      { "name": "emergencyContact", "label": "Emergency Contact Name & Phone", "type": "text", "required": true },
+      { "name": "indemnity", "label": "I agree to the race terms, medical waiver, and indemnity agreement.", "type": "checkbox", "required": true }
+    ]
+  },
+  {
+    "title": "Victoria Falls Carnival 2026",
+    "slug": "victoria-falls-carnival-2026",
+    "description": "A three-day music and culture festival with headline DJs, regional acts, and adventure activities around Victoria Falls.",
+    "date": "December 29 - 31, 2026",
+    "time": "04:00 PM - 03:00 AM Daily",
+    "startsAt": "2026-12-29T14:00:00.000Z",
+    "endsAt": "2026-12-31T01:00:00.000Z",
+    "location": "Victoria Falls Primary School & Elephant Hills Resort",
+    "category": "Music",
+    "image": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80",
+    "ticketTiers": [
+      { "name": "3-Day General Pass", "price": 90, "currency": "USD", "description": "Access to all main stages and festival grounds for all 3 days.", "available": 1200 },
+      { "name": "3-Day VIP Deck Pass", "price": 200, "currency": "USD", "description": "Fast-track entry, access to elevated VIP viewing deck, private bars, and welcome drink.", "available": 250 },
+      { "name": "3-Day VVIP Backstage Experience", "price": 450, "currency": "USD", "description": "All VIP perks plus backstage artist lounge access and premium transfers.", "available": 50 }
+    ],
+    "customFields": [
+      { "name": "passportNum", "label": "Passport or National ID Number", "type": "text", "required": true },
+      { "name": "nationality", "label": "Nationality", "type": "text", "required": true },
+      { "name": "accommodation", "label": "Where are you staying in Vic Falls?", "type": "text", "required": false }
+    ]
+  },
+  {
+    "title": "Zimbabwe Tech Summit 2026",
+    "slug": "zimbabwe-tech-summit-2026",
+    "description": "The largest technology conference in Zimbabwe, bringing together developers, startup founders, marketers, and investors.",
+    "date": "October 15, 2026",
+    "time": "08:00 AM - 05:00 PM",
+    "startsAt": "2026-10-15T06:00:00.000Z",
+    "endsAt": "2026-10-15T15:00:00.000Z",
+    "location": "Celebration Centre, Borrowdale, Harare",
+    "category": "Business",
+    "image": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80",
+    "ticketTiers": [
+      { "name": "Student Pass", "price": 15, "currency": "USD", "description": "Discounted access for active college and university students.", "available": 100 },
+      { "name": "Standard Delegate", "price": 60, "currency": "USD", "description": "Full access to all panels, exhibition hall, lunch and coffee breaks.", "available": 400 },
+      { "name": "VIP Executive Pass", "price": 180, "currency": "USD", "description": "Front-row seating, access to VIP lounge, private catering, and invitation to VIP dinner.", "available": 75 }
+    ],
+    "customFields": [
+      { "name": "company", "label": "Company / Organization Name", "type": "text", "required": true },
+      { "name": "jobTitle", "label": "Job Title", "type": "text", "required": true },
+      { "name": "dietary", "label": "Dietary Requirements", "type": "select", "required": false, "options": ["None", "Vegetarian", "Vegan", "Halal", "Gluten-Free"] }
+    ]
+  },
+  {
+    "title": "Bulawayo Jazz & Heritage Nights 2026",
+    "slug": "bulawayo-jazz-heritage-nights-2026",
+    "description": "An open-air celebration of jazz, spoken word, and heritage performances in the city centre.",
+    "date": "August 22, 2026",
+    "time": "06:00 PM - 11:30 PM",
+    "startsAt": "2026-08-22T16:00:00.000Z",
+    "endsAt": "2026-08-22T21:30:00.000Z",
+    "location": "Bulawayo Amphitheatre, Bulawayo",
+    "category": "Music",
+    "image": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1200&q=80",
+    "ticketTiers": [
+      { "name": "Standard Seat", "price": 12, "currency": "USD", "description": "General admission seating with access to the food court.", "available": 600 },
+      { "name": "Front Row Seat", "price": 30, "currency": "USD", "description": "Reserved front row seating with commemorative program booklet.", "available": 120 },
+      { "name": "VIP Table", "price": 120, "currency": "USD", "description": "Reserved table for four with bottle service and backstage meet-and-greet.", "available": 20 }
+    ],
+    "customFields": [
+      { "name": "favoriteArtist", "label": "Favorite Jazz Artist", "type": "text", "required": false },
+      { "name": "arrivalMethod", "label": "How are you arriving?", "type": "select", "required": false, "options": ["Car", "Taxi", "Ride share", "Bus"] }
+    ]
+  },
+  {
+    "title": "Lake Chivero Food & Wine Festival 2026",
+    "slug": "lake-chivero-food-wine-festival-2026",
+    "description": "A weekend of local chefs, boutique wineries, live acoustic sets, and family activities by the lake.",
+    "date": "November 7, 2026",
+    "time": "11:00 AM - 09:00 PM",
+    "startsAt": "2026-11-07T09:00:00.000Z",
+    "endsAt": "2026-11-07T19:00:00.000Z",
+    "location": "Lake Chivero Resort, Mashonaland West",
+    "category": "Other",
+    "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80",
+    "ticketTiers": [
+      { "name": "Day Pass", "price": 18, "currency": "USD", "description": "Festival entry, tasting vouchers, and access to the lakeside market.", "available": 900 },
+      { "name": "Couples Pass", "price": 30, "currency": "USD", "description": "Entry for two with two tasting vouchers and reserved picnic seating.", "available": 250 },
+      { "name": "Chef's Table Experience", "price": 95, "currency": "USD", "description": "Curated tasting menu, wine pairing, and kitchen-side demo access.", "available": 40 }
+    ],
+    "customFields": [
+      { "name": "dietary", "label": "Dietary Requirements", "type": "text", "required": false },
+      { "name": "allergies", "label": "Food Allergies", "type": "text", "required": false }
+    ]
+  }
+]
