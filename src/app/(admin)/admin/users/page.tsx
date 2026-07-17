@@ -12,7 +12,7 @@ export default function AdminUsersPage() {
 
   useEffect(() => {
     getAllUsers()
-      .then(setUsers)
+      .then((res) => setUsers(res.users || []))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);

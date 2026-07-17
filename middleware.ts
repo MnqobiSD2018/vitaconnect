@@ -43,8 +43,8 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Protect dashboard, organizer, and admin routes
-  const protectedPaths = ['/dashboard', '/organizer', '/admin'];
+  // Protect dashboard, organizer, admin, and onboarding routes
+  const protectedPaths = ['/dashboard', '/organizer', '/admin', '/onboarding'];
   const isProtected = protectedPaths.some((p) =>
     request.nextUrl.pathname.startsWith(p)
   );

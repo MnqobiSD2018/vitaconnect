@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Ticket, Heart, User, Settings, Menu, X, LogOut } from 'lucide-react';
+import { Home, Ticket, Heart, Bell, User, Settings, Menu, X, LogOut } from 'lucide-react';
 import logoWhite from '@/app/media/vc-white.svg';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
@@ -18,6 +18,7 @@ export default function BuyerLayout({ children }: { children: React.ReactNode })
     { name: 'Dashboard', href: '/dashboard', icon: Home },
     { name: 'My Tickets', href: '/dashboard/tickets', icon: Ticket },
     { name: 'Saved Events', href: '/dashboard/saved', icon: Heart },
+    { name: 'Notifications', href: '/dashboard/notifications', icon: Bell },
     { name: 'Profile', href: '/dashboard/profile', icon: User },
     { name: 'Settings', href: '/dashboard/settings', icon: Settings },
   ];

@@ -49,16 +49,25 @@ export async function getEventBySlug(slug: string): Promise<EventWithTiers | nul
   return data as EventWithTiers;
 }
 
-export async function getOrganizerEvents(organizerId: string): Promise<EventWithTiers[]> {
+export async function getOrganizerEvents(organizerId: string, page = 1, limit = 20) {
   const supabase = await createClient();
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  const { count } = await supabase
+    .from('events')
+    .select('id', { count: 'exact', head: true })
+    .eq('organizer_id', organizerId);
+
   const { data, error } = await supabase
     .from('events')
     .select('*, ticket_tiers(*)')
     .eq('organizer_id', organizerId)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(from, to);
 
   if (error) throw new Error(error.message);
-  return (data || []) as EventWithTiers[];
+  return { events: (data || []) as EventWithTiers[], total: count || 0, page, limit, totalPages: Math.ceil((count || 0) / limit) };
 }
 
 export async function createEvent(

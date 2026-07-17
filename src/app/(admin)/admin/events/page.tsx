@@ -14,7 +14,7 @@ export default function AdminEventsPage() {
 
   useEffect(() => {
     getAllEvents()
-      .then(setEvents)
+      .then((res) => setEvents(res.events || []))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);

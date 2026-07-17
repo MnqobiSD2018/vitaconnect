@@ -1,6 +1,5 @@
-
-// src/lib/payments/paynow.ts
 import Paynow from 'paynow';
+import { createClient } from '@/lib/supabase/server';
 
 export interface Order {
   id: string;
@@ -12,9 +11,16 @@ export interface Order {
   };
 }
 
-async function updateOrderPaymentRef(orderId: string, pollUrl: string) {
-  // Mock updating database with the poll URL
-  console.log(`Updated order ${orderId} with poll URL ${pollUrl}`);
+async function updateOrderPaymentRef(orderId: string, pollUrl: string, paymentRef?: string) {
+  const supabase = await createClient();
+  const update: Record<string, any> = {
+    poll_url: pollUrl,
+    updated_at: new Date().toISOString(),
+  };
+  if (paymentRef) {
+    update.payment_ref = paymentRef;
+  }
+  await supabase.from('orders').update(update).eq('id', orderId);
 }
 
 const paynow = new Paynow(
@@ -30,32 +36,29 @@ export async function initiatePayment(order: Order) {
     order.order_number,
     order.attendee_email
   );
-  
+
   payment.add(`VitaConnect Tickets - ${order.event.title}`, order.total);
-  
+
   const response = await paynow.send(payment);
-  
+
   if (response.success) {
-    // Save poll URL to order for status polling
-    await updateOrderPaymentRef(order.id, response.pollUrl);
+    await updateOrderPaymentRef(order.id, response.pollUrl, order.order_number);
     return { redirectUrl: response.redirectUrl };
   }
-  
-  throw new Error(response.error || 'Payment initiation failed');
+
+  throw new Error((response as any).error || 'Payment initiation failed');
 }
 
-// Verify IPN webhook from Paynow
 export async function verifyWebhook(body: Record<string, string>) {
-  const hash = body.hash;
   const status = body.status;
   const reference = body.reference;
-  
-  // Paynow sends MD5 hash of fields + integration key
-  const expectedHash = paynow.generateHash(body);
-  
+
+  const hash = body.hash;
+  const expectedHash = paynow.generateHash(body, process.env.PAYNOW_INTEGRATION_KEY || '');
+
   if (hash !== expectedHash) {
     throw new Error('Invalid webhook signature');
   }
-  
+
   return { reference, status, paid: status.toLowerCase() === 'paid' };
-}
+}

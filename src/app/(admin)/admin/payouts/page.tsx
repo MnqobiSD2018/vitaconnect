@@ -14,7 +14,7 @@ export default function AdminPayoutsPage() {
 
   useEffect(() => {
     getAllPayouts()
-      .then(setPayouts)
+      .then((res) => setPayouts(res.payouts || []))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);

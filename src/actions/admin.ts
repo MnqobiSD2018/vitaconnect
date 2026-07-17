@@ -27,12 +27,20 @@ export async function getAdminStats() {
   };
 }
 
-export async function getAllUsers(search?: string) {
+export async function getAllUsers(page = 1, limit = 20, search?: string) {
   const supabase = await createClient();
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  const { count } = await supabase
+    .from('profiles')
+    .select('id', { count: 'exact', head: true });
+
   let query = supabase
     .from('profiles')
     .select('*, organizer_profiles(organization_name)')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(from, to);
 
   const { data, error } = await query;
   if (error) throw new Error(error.message);
@@ -46,27 +54,45 @@ export async function getAllUsers(search?: string) {
         (u.username || '').toLowerCase().includes(q)
     );
   }
-  return users;
+  return { users, total: count || 0, page, limit, totalPages: Math.ceil((count || 0) / limit) };
 }
 
-export async function getAllEvents(status?: string) {
+export async function getAllEvents(page = 1, limit = 20, statusFilter?: string) {
   const supabase = await createClient();
-  let query = supabase
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  let countQuery = supabase.from('events').select('id', { count: 'exact', head: true });
+  let dataQuery = supabase
     .from('events')
     .select('id, title, starts_at, venue_address, status, cover_image_url, organizer_profiles(organization_name), categories(name), ticket_tiers(price, currency)')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(from, to);
 
-  if (status) {
-    query = query.eq('status', status);
+  if (statusFilter) {
+    countQuery = countQuery.eq('status', statusFilter) as any;
+    dataQuery = dataQuery.eq('status', statusFilter) as any;
   }
 
-  const { data, error } = await query;
+  const [countResult, { data, error }] = await Promise.all([
+    countQuery,
+    dataQuery,
+  ]);
+
   if (error) throw new Error(error.message);
-  return (data || []) as any[];
+  return { events: (data || []) as any[], total: countResult.count || 0, page, limit, totalPages: Math.ceil((countResult.count || 0) / limit) };
 }
 
 export async function approveEvent(eventId: string, adminId: string) {
   const supabase = await createClient();
+
+  // Get event title and organizer for notification
+  const { data: event } = await supabase
+    .from('events')
+    .select('title, organizer_id')
+    .eq('id', eventId)
+    .single();
+
   const { error } = await supabase
     .from('events')
     .update({
@@ -76,10 +102,22 @@ export async function approveEvent(eventId: string, adminId: string) {
     })
     .eq('id', eventId);
   if (error) throw new Error(error.message);
+
+  if (event) {
+    const { createNotification } = await import('@/actions/notifications');
+    await createNotification(event.organizer_id, 'event_approved', 'Event Approved', `Your event "${event.title}" has been approved and is now live.`);
+  }
 }
 
 export async function rejectEvent(eventId: string, note?: string) {
   const supabase = await createClient();
+
+  const { data: event } = await supabase
+    .from('events')
+    .select('title, organizer_id')
+    .eq('id', eventId)
+    .single();
+
   const { error } = await supabase
     .from('events')
     .update({
@@ -88,26 +126,49 @@ export async function rejectEvent(eventId: string, note?: string) {
     })
     .eq('id', eventId);
   if (error) throw new Error(error.message);
+
+  if (event) {
+    const { createNotification } = await import('@/actions/notifications');
+    await createNotification(event.organizer_id, 'event_rejected', 'Event Rejected', `Your event "${event.title}" was not approved. Reason: ${note || 'Rejected by admin'}.`);
+  }
 }
 
-export async function getAllPayouts(status?: string) {
+export async function getAllPayouts(page = 1, limit = 20, statusFilter?: string) {
   const supabase = await createClient();
-  let query = supabase
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  let countQuery = supabase.from('payouts').select('id', { count: 'exact', head: true });
+  let dataQuery = supabase
     .from('payouts')
     .select('*, organizer_profiles(organization_name, paynow_email, bank_name, bank_account)')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(from, to);
 
-  if (status) {
-    query = query.eq('status', status);
+  if (statusFilter) {
+    countQuery = countQuery.eq('status', statusFilter) as any;
+    dataQuery = dataQuery.eq('status', statusFilter) as any;
   }
 
-  const { data, error } = await query;
+  const [countResult, { data, error }] = await Promise.all([
+    countQuery,
+    dataQuery,
+  ]);
+
   if (error) throw new Error(error.message);
-  return (data || []) as any[];
+  return { payouts: (data || []) as any[], total: countResult.count || 0, page, limit, totalPages: Math.ceil((countResult.count || 0) / limit) };
 }
 
 export async function processPayout(payoutId: string, adminId: string, reference?: string) {
   const supabase = await createClient();
+
+  // Get payout details for notification + email
+  const { data: payout } = await supabase
+    .from('payouts')
+    .select('amount, currency, organizer_id, organizer_profiles!inner(organization_name, user_id)')
+    .eq('id', payoutId)
+    .single();
+
   const { error } = await supabase
     .from('payouts')
     .update({
@@ -118,6 +179,32 @@ export async function processPayout(payoutId: string, adminId: string, reference
     })
     .eq('id', payoutId);
   if (error) throw new Error(error.message);
+
+  if (payout) {
+    const org = payout.organizer_profiles as any;
+    const { createNotification } = await import('@/actions/notifications');
+
+    // Notify organizer in-app
+    await createNotification(
+      org.user_id,
+      'payout_processed',
+      'Payout Processed',
+      `$${Number(payout.amount).toFixed(2)} has been paid out to your account.`,
+    );
+
+    // Send email
+    const { sendOrganizerPayout } = await import('@/lib/email/resend');
+    const { data: profile } = await supabase.from('profiles').select('email').eq('id', org.user_id).single();
+    if (profile) {
+      sendOrganizerPayout(profile.email, {
+        organizationName: org.organization_name || 'Your Organization',
+        amount: Number(payout.amount),
+        payoutMethod: 'Bank Transfer',
+        payoutDate: new Date().toLocaleDateString('en-ZW', { year: 'numeric', month: 'long', day: 'numeric' }),
+        eventTitle: 'VitaConnect Payout',
+      }).catch((err) => console.error('Failed to send payout email:', err));
+    }
+  }
 }
 
 export async function getPlatformSettings() {

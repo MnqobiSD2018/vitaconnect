@@ -22,12 +22,27 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormData) => {
     setServerError('')
-    const { error } = await signIn({ email: data.email, password: data.password })
-    if (error) {
-      setServerError(error)
+    const result = await signIn({ email: data.email, password: data.password })
+    if (result.error) {
+      setServerError(result.error)
       return
     }
-    router.push(redirect)
+    // Redirect based on role, unless there's an explicit redirect param
+    const searchRedirect = searchParams.get('redirect')
+    if (searchRedirect) {
+      router.push(searchRedirect)
+    } else {
+      const role = result.role || 'attendee'
+      if (role === 'admin') {
+        router.push('/admin')
+      } else if (role === 'organizer') {
+        router.push('/organizer')
+      } else if (role === 'needs_onboarding') {
+        router.push('/onboarding')
+      } else {
+        router.push('/dashboard')
+      }
+    }
     router.refresh()
   }
 

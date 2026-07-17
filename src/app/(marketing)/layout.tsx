@@ -74,12 +74,20 @@ export default function MarketingLayout({
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-4">
             {loading ? null : user ? (
-              <Link 
-                href={getDashboardPath()}
-                className="inline-flex h-10 items-center justify-center rounded-xl bg-gradient-to-r from-slate-900 via-slate-700 to-slate-800 px-5 text-sm font-semibold text-white shadow-sm hover:opacity-95 transition-all duration-200 active:scale-[0.98]"
-              >
-                Dashboard
-              </Link>
+              <>
+                <Link
+                  href="/organizer"
+                  className="inline-flex h-10 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-all duration-200"
+                >
+                  Organizer
+                </Link>
+                <Link 
+                  href={getDashboardPath()}
+                  className="inline-flex h-10 items-center justify-center rounded-xl bg-gradient-to-r from-slate-900 via-slate-700 to-slate-800 px-5 text-sm font-semibold text-white shadow-sm hover:opacity-95 transition-all duration-200 active:scale-[0.98]"
+                >
+                  Dashboard
+                </Link>
+              </>
             ) : (
               <>
                 <Link 
@@ -89,7 +97,13 @@ export default function MarketingLayout({
                   Sign In
                 </Link>
                 <Link
-                  href="/#events"
+                  href="/sell"
+                  className="inline-flex h-10 items-center justify-center rounded-xl border-2 border-slate-300 bg-white px-5 text-sm font-semibold text-slate-700 shadow-sm hover:border-slate-400 hover:bg-slate-50 transition-all duration-200"
+                >
+                  Sell Tickets
+                </Link>
+                <Link
+                  href="/events"
                   className="inline-flex h-10 items-center justify-center rounded-xl bg-gradient-to-r from-slate-900 via-slate-700 to-slate-800 px-5 text-sm font-semibold text-white shadow-sm hover:opacity-95 transition-all duration-200 active:scale-[0.98]"
                 >
                   Buy Tickets
@@ -143,13 +157,22 @@ export default function MarketingLayout({
               <hr className="border-slate-100 my-1" />
               <div className="flex flex-col gap-3">
                 {user ? (
-                  <Link
-                    href={getDashboardPath()}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex h-11 items-center justify-center rounded-xl bg-gradient-to-r from-slate-900 via-slate-700 to-slate-800 text-sm font-semibold text-white hover:opacity-95"
-                  >
-                    Dashboard
-                  </Link>
+                  <>
+                    <Link
+                      href="/organizer"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex h-11 items-center justify-center rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                    >
+                      Organizer
+                    </Link>
+                    <Link
+                      href={getDashboardPath()}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex h-11 items-center justify-center rounded-xl bg-gradient-to-r from-slate-900 via-slate-700 to-slate-800 text-sm font-semibold text-white hover:opacity-95"
+                    >
+                      Dashboard
+                    </Link>
+                  </>
                 ) : (
                   <>
                     <Link
@@ -160,7 +183,14 @@ export default function MarketingLayout({
                       Sign In
                     </Link>
                     <Link
-                      href="/#events"
+                      href="/sell"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex h-11 items-center justify-center rounded-xl border-2 border-slate-300 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                    >
+                      Sell Tickets
+                    </Link>
+                    <Link
+                      href="/events"
                       onClick={() => setMobileMenuOpen(false)}
                       className="flex h-11 items-center justify-center rounded-xl bg-gradient-to-r from-slate-900 via-slate-700 to-slate-800 text-sm font-semibold text-white hover:opacity-95"
                     >
@@ -201,7 +231,7 @@ export default function MarketingLayout({
               <p className="max-w-md text-sm leading-relaxed text-slate-400">
                 VitaConnect is Zimbabwe's leading next-generation event management, ticketing, and live timing solution. We power marathons, festivals, and business events nationwide with RFID technology and instant local payments.
               </p>
-              <div className="space-y-2 text-sm text-slate-350">
+              <div className="space-y-2 text-sm text-slate-350 text-white">
                 <div className="flex items-center gap-2.5">
                   <Phone className="h-4 w-4 text-teal-450 shrink-0" />
                   <span>+263 777 980 062 / +263 719 591 300</span>
@@ -268,9 +298,9 @@ export default function MarketingLayout({
               &copy; {new Date().getFullYear()} VitaConnect Ltd. All rights reserved. Timing services licensed under VitaTiming systems.
             </p>
             <div className="flex gap-6 text-xs text-slate-500">
-              <a href="#" className="hover:text-slate-400">Privacy Policy</a>
-              <a href="#" className="hover:text-slate-400">Terms of Service</a>
-              <a href="#" className="hover:text-slate-400">Indemnity Waiver</a>
+              <Link href="/privacy" className="hover:text-slate-400">Privacy Policy</Link>
+              <Link href="/terms" className="hover:text-slate-400">Terms of Service</Link>
+              <Link href="/contact" className="hover:text-slate-400">Contact Us</Link>
             </div>
           </div>
         </div>

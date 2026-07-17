@@ -71,10 +71,15 @@ export async function updateOrganizerProfile(
     website: string;
     logo_url: string;
     cover_url: string;
+    phone: string;
+    city: string;
     paynow_email: string;
     paynow_integration_key: string;
     bank_name: string;
     bank_account: string;
+    account_name: string;
+    branch: string;
+    mobile_money: string;
   }>
 ) {
   const supabase = await createClient();
@@ -129,14 +134,62 @@ export async function getOrganizerStats(organizerId: string) {
   };
 }
 
-export async function getOrganizerPayouts(organizerId: string) {
+export async function getMyOrganizerProfile() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
+
+  const { data, error } = await supabase
+    .from('organizer_profiles')
+    .select('*')
+    .eq('user_id', user.id)
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function getEventTickets(eventId: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from('payouts')
-    .select('*')
-    .eq('organizer_id', organizerId)
+    .from('tickets')
+    .select('*, orders!inner(attendee_name, attendee_email, order_number), ticket_tiers(name)')
+    .eq('event_id', eventId)
     .order('created_at', { ascending: false });
 
   if (error) throw new Error(error.message);
   return data || [];
+}
+
+export async function getEventTicketTiers(eventId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('ticket_tiers')
+    .select('*')
+    .eq('event_id', eventId)
+    .order('sort_order', { ascending: true });
+
+  if (error) throw new Error(error.message);
+  return data || [];
+}
+
+export async function getOrganizerPayouts(organizerId: string, page = 1, limit = 20) {
+  const supabase = await createClient();
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  const { count } = await supabase
+    .from('payouts')
+    .select('id', { count: 'exact', head: true })
+    .eq('organizer_id', organizerId);
+
+  const { data, error } = await supabase
+    .from('payouts')
+    .select('*')
+    .eq('organizer_id', organizerId)
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
+  if (error) throw new Error(error.message);
+  return { payouts: data || [], total: count || 0, page, limit, totalPages: Math.ceil((count || 0) / limit) };
 }

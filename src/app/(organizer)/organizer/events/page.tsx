@@ -1,56 +1,80 @@
 "use client"
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { listEvents, deleteEvent } from "@/lib/eventStore";
-import { Event } from "@/lib/constants/mockData";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/use-auth";
+import { getMyOrganizerProfile } from "@/actions/organizer";
+import { getOrganizerEvents, deleteEvent } from "@/actions/events";
 
 export default function OrganizerEventsPage() {
-	const [events, setEvents] = useState<Event[]>([]);
-	const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const router = useRouter();
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-	useEffect(() => {
-		let mounted = true;
-		setLoading(true);
-		listEvents()
-			.then((res) => {
-				if (mounted) setEvents(res);
-			})
-			.finally(() => mounted && setLoading(false));
-		return () => {
-			mounted = false;
-		};
-	}, []);
+  const loadEvents = useCallback(async () => {
+    if (!user) return;
+    try {
+      const profile = await getMyOrganizerProfile();
+      const data = await getOrganizerEvents(profile.id);
+      setEvents(data.events || []);
+    } catch {} finally {
+      setLoading(false);
+    }
+  }, [user]);
 
-	async function handleDelete(id: string) {
-		if (!confirm('Delete this event?')) return;
-		await deleteEvent(id);
-		setEvents((s) => s.filter((e) => e.id !== id));
-	}
+  useEffect(() => { loadEvents(); }, [loadEvents]);
 
-	if (loading) return <div>Loading...</div>;
+  async function handleDelete(id: string) {
+    if (!confirm('Delete this event?')) return;
+    try {
+      await deleteEvent(id);
+      setEvents((s) => s.filter((e) => e.id !== id));
+    } catch {}
+  }
 
-	return (
-		<div className="space-y-4">
-			<div className="flex items-center justify-between">
-				<h2 className="text-xl font-semibold text-slate-900">Your Events</h2>
-				<Link href="/organizer/events/new" className="text-sm text-slate-700 hover:underline">Create new</Link>
-			</div>
+  if (loading) return <div className="h-32 flex items-center justify-center"><div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-t-slate-900" /></div>;
 
-			<div className="grid gap-3">
-				{events.map((ev) => (
-					<div key={ev.id} className="rounded-lg border border-slate-100 bg-white p-3 flex items-center justify-between">
-						<div>
-							<div className="font-medium text-slate-900">{ev.title}</div>
-							<div className="text-xs text-slate-500">{ev.date} • {ev.location}</div>
-						</div>
-						<div className="flex gap-2">
-							<Link href={`/organizer/events/${ev.id}`} className="text-sm text-slate-600 hover:underline">Manage</Link>
-							<button onClick={() => handleDelete(ev.id)} className="text-sm text-rose-600 hover:underline">Delete</button>
-						</div>
-					</div>
-				))}
-			</div>
-		</div>
-	);
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold text-slate-900">Your Events</h2>
+        <Link href="/organizer/events/new" className="text-sm font-semibold text-teal-600 hover:text-teal-700">+ Create new</Link>
+      </div>
+
+      {events.length === 0 ? (
+        <div className="text-center py-16 text-sm text-slate-400">
+          No events yet. <Link href="/organizer/events/new" className="text-teal-600 hover:underline">Create your first event</Link>
+        </div>
+      ) : (
+        <div className="grid gap-3">
+          {events.map((ev: any) => (
+            <div key={ev.id} className="rounded-lg border border-slate-100 bg-white p-4 flex items-center justify-between shadow-sm">
+              <div className="flex items-center gap-4">
+                {ev.cover_image_url && (
+                  <img src={ev.cover_image_url} alt="" className="h-12 w-20 rounded-lg object-cover hidden sm:block" />
+                )}
+                <div>
+                  <div className="font-semibold text-slate-900">{ev.title}</div>
+                  <div className="text-xs text-slate-500 mt-0.5">
+                    {ev.starts_at ? new Date(ev.starts_at).toLocaleDateString() : 'No date'} &bull; {ev.venue_address || 'Online'}
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                  ev.status === 'published' ? 'bg-emerald-50 text-emerald-700' :
+                  ev.status === 'draft' ? 'bg-slate-100 text-slate-600' :
+                  'bg-amber-50 text-amber-700'
+                }`}>{ev.status}</span>
+                <Link href={`/organizer/events/${ev.id}`} className="text-sm text-slate-600 hover:underline">Manage</Link>
+                <button onClick={() => handleDelete(ev.id)} className="text-sm text-rose-600 hover:underline">Delete</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }

@@ -20,6 +20,7 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+import ReviewsSection from './ReviewsSection';
 
 interface EventDetailProps {
   event: Event;
@@ -892,6 +893,8 @@ export default function EventDetail({ event }: EventDetailProps) {
           </div>
         </div>
       )}
+
+      <ReviewsSection eventId={event.id} />
     </div>
   );
 }

@@ -94,7 +94,7 @@ export async function createOrder(input: CheckoutInput) {
 
   if (orderErr) throw new Error(orderErr.message);
 
-  // Create tickets and update tier sold counts
+  // Create tickets (sold counts updated by DB trigger on order completion)
   const ticketInserts: Array<Record<string, unknown>> = [];
 
   for (const item of orderItems) {
@@ -119,26 +119,10 @@ export async function createOrder(input: CheckoutInput) {
       });
     }
     ticketInserts.push(...ticketsForTier);
-
-    // Update quantity_sold
-    await supabase
-      .from('ticket_tiers')
-      .update({ quantity_sold: (item.tier.quantity_sold || 0) + item.quantity })
-      .eq('id', item.tier.id);
   }
 
   const { error: ticketErr } = await supabase.from('tickets').insert(ticketInserts);
   if (ticketErr) throw new Error(ticketErr.message);
-
-  // Update event total_sold and total_revenue
-  const totalQty = input.items.reduce((sum, i) => sum + i.quantity, 0);
-  const { data: eventData } = await supabase.from('events').select('total_sold, total_revenue').eq('id', input.eventId).single();
-  if (eventData) {
-    await supabase.from('events').update({
-      total_sold: (eventData.total_sold || 0) + totalQty,
-      total_revenue: Number(eventData.total_revenue || 0) + subtotal,
-    }).eq('id', input.eventId);
-  }
 
   return { orderId: order.id, orderNumber, total };
 }
@@ -215,36 +199,74 @@ export async function verifyTicket(qrCode: string, checkInBy: string, device?: s
   return { valid: true, ticket: { ...ticket, is_checked_in: true } };
 }
 
+export async function getOrderByReference(reference: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('orders')
+    .select('id, order_number, total, status, payment_status, events(title, slug, starts_at, cover_image_url)')
+    .or(`order_number.eq.${reference},payment_ref.eq.${reference}`)
+    .single();
+
+  if (error || !data) return null;
+  return data;
+}
+
 export async function cancelOrder(orderId: string) {
   const supabase = await createClient();
 
   const { data: order, error: orderErr } = await supabase
     .from('orders')
-    .select('*, tickets(tier_id)')
+    .select('*, tickets(tier_id, is_checked_in), events(title, organizer_id)')
     .eq('id', orderId)
     .single();
 
   if (orderErr || !order) throw new Error('Order not found');
-  if (order.status === 'completed') throw new Error('Cannot cancel completed order');
 
-    // Restore ticket tier quantities
+  if (order.status === 'completed') {
+    // Restore ticket tier counts
     const tierCounts = new Map<string, number>();
     (order.tickets || []).forEach((t: { tier_id: string }) => {
       tierCounts.set(t.tier_id, (tierCounts.get(t.tier_id) || 0) + 1);
     });
-
     for (const [tierId, count] of tierCounts) {
-      const { data: tierData } = await supabase.from('ticket_tiers').select('quantity_sold').eq('id', tierId).single();
-      if (tierData) {
-        await supabase.from('ticket_tiers').update({ quantity_sold: Math.max(0, (tierData.quantity_sold || 0) - count) }).eq('id', tierId);
-      }
+      await supabase.rpc('decrement_tier_quantity', { p_tier_id: tierId, p_count: count });
     }
 
-  // Delete tickets
-  await supabase.from('tickets').delete().eq('order_id', orderId);
+    // Soft-cancel tickets instead of deleting
+    await supabase.from('tickets').update({ is_cancelled: true }).eq('order_id', orderId);
 
-  // Update order status
+    // Notify user
+    const { createNotification } = await import('@/actions/notifications');
+    await createNotification(order.user_id, 'order_cancelled', 'Order Cancelled', `Order #${order.order_number} has been cancelled. A manual refund must be processed.`);
+  } else {
+    // Non-completed orders: tickets never counted, just delete
+    await supabase.from('tickets').delete().eq('order_id', orderId);
+  }
+
   await supabase.from('orders').update({ status: 'cancelled', updated_at: new Date().toISOString() }).eq('id', orderId);
 
-  return { success: true };
+  return { success: true, requiresManualRefund: order.status === 'completed' };
+}
+
+export async function initiatePaymentAction(orderId: string) {
+  const supabase = await createClient();
+
+  const { data: order, error } = await supabase
+    .from('orders')
+    .select('id, order_number, attendee_email, total, events(title)')
+    .eq('id', orderId)
+    .single();
+
+  if (error || !order) throw new Error('Order not found');
+
+  const { initiatePayment } = await import('@/lib/payments/paynow');
+  const result = await initiatePayment({
+    id: order.id,
+    order_number: order.order_number,
+    attendee_email: order.attendee_email,
+    total: Number(order.total),
+    event: { title: (order.events as any).title },
+  });
+
+  return result;
 }

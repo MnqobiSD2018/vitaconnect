@@ -158,3 +158,11 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+
+@media print {
+  body * { visibility: hidden; }
+  .print\\:visible, .print\\:visible * { visibility: visible; }
+  .print\\:hidden { display: none !important; }
+  body { background: white; }
+  @page { margin: 1cm; }
+}

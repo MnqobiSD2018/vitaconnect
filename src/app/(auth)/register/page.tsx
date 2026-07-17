@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import mainLogo from '@/app/media/vc-white.svg'
 import { Mail, Lock, User, Loader2 } from 'lucide-react'
@@ -13,11 +13,12 @@ import { signUp } from '@/actions/auth'
 
 export default function RegistrationPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [serverError, setServerError] = useState('')
 
   const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { role: 'attendee' },
+    defaultValues: { role: searchParams.get('role') === 'organizer' ? 'organizer' : 'attendee' },
   })
 
   const selectedRole = watch('role')
