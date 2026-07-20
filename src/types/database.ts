@@ -174,3 +174,73 @@ export interface Notification {
   is_read: boolean;
   created_at: string;
 }
+
+type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
+
+type TableDefinition<Row, Insert, Update> = {
+  Row: Row;
+  Insert: Insert;
+  Update: Update;
+  Relationships: [];
+};
+
+export type Database = {
+  public: {
+    Tables: {
+      profiles: TableDefinition<
+        Profile,
+        Omit<Profile, 'id' | 'created_at' | 'updated_at'>,
+        Partial<Omit<Profile, 'id'>>
+      >;
+      organizer_profiles: TableDefinition<
+        OrganizerProfile,
+        Omit<OrganizerProfile, 'id' | 'created_at'>,
+        Partial<Omit<OrganizerProfile, 'id'>>
+      >;
+      categories: TableDefinition<
+        Category,
+        Omit<Category, 'id'>,
+        Partial<Omit<Category, 'id'>>
+      >;
+      venues: TableDefinition<
+        Venue,
+        Omit<Venue, 'id' | 'created_at'>,
+        Partial<Omit<Venue, 'id'>>
+      >;
+      events: TableDefinition<
+        Event,
+        Omit<Event, 'id' | 'total_sold' | 'total_revenue' | 'created_at' | 'updated_at'>,
+        Partial<Omit<Event, 'id'>>
+      >;
+      ticket_tiers: TableDefinition<
+        TicketTier,
+        Omit<TicketTier, 'id' | 'quantity_sold' | 'created_at'>,
+        Partial<Omit<TicketTier, 'id'>>
+      >;
+      orders: TableDefinition<
+        Order,
+        Omit<Order, 'id' | 'created_at' | 'updated_at'>,
+        Partial<Omit<Order, 'id'>>
+      >;
+      tickets: TableDefinition<
+        Ticket,
+        Omit<Ticket, 'id' | 'created_at'>,
+        Partial<Omit<Ticket, 'id'>>
+      >;
+      notifications: TableDefinition<
+        Notification,
+        Omit<Notification, 'id' | 'created_at'>,
+        Partial<Omit<Notification, 'id'>>
+      >;
+    };
+    Views: {};
+    Functions: {};
+    Enums: {
+      user_role: UserRole;
+      event_status: EventStatus;
+      order_status: OrderStatus;
+      payment_provider: PaymentProvider;
+      notification_type: NotificationType;
+    };
+  };
+};

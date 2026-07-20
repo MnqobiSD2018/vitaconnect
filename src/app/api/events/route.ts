@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import getServerClient, { createClient } from '@/lib/supabase/server';
 import { slugify } from '@/lib/utils/slug';
+import type { OrganizerProfile, Event } from '@/types/database';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -11,7 +12,6 @@ export async function GET(req: Request) {
 
   const supabase = getServerClient();
 
-  // Get total count for pagination
   const { count } = await supabase
     .from('events')
     .select('id', { count: 'exact', head: true });
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
       .from('organizer_profiles')
       .select('id')
       .eq('user_id', user.id)
-      .single();
+      .single() as { data: Pick<OrganizerProfile, 'id'> | null; error: any };
 
     if (profileErr || !profile) {
       return NextResponse.json({ error: 'Organizer profile not found' }, { status: 400 });
@@ -68,10 +68,10 @@ export async function POST(req: Request) {
       .from('events')
       .insert({ ...body, slug, organizer_id: profile.id })
       .select('id')
-      .single();
+      .single() as { data: Pick<Event, 'id'> | null; error: any };
 
-    if (eventErr) {
-      return NextResponse.json({ error: eventErr.message }, { status: 500 });
+    if (eventErr || !event) {
+      return NextResponse.json({ error: eventErr?.message ?? 'Event creation failed' }, { status: 500 });
     }
 
     if (ticketTiers.length > 0) {

@@ -2,6 +2,9 @@ import { createServerClient } from '@supabase/ssr';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { getSupabaseConfig } from './config';
+import type { Database } from '@/types/database';
+
+export type TypedSupabaseClient = ReturnType<typeof createSupabaseClient<Database>>;
 
 // Cookie-based server client for use in Server Components / Route Handlers
 export async function createClient() {
@@ -30,13 +33,13 @@ export async function createClient() {
 }
 
 // Backward-compatible default export for existing API routes (privileged, no cookies)
-let _serverClient: ReturnType<typeof createSupabaseClient> | null = null;
+let _serverClient: TypedSupabaseClient | null = null;
 
-export default function getServerClient() {
+export default function getServerClient(): TypedSupabaseClient {
   if (_serverClient) return _serverClient;
   const { url, anonKey, serviceRoleKey } = getSupabaseConfig();
   const key = serviceRoleKey || anonKey;
-  _serverClient = createSupabaseClient(url, key, {
+  _serverClient = createSupabaseClient<Database>(url, key, {
     auth: { persistSession: false },
   });
   return _serverClient;
