@@ -1,4 +1,4 @@
-import Paynow from 'paynow';
+import { Paynow } from 'paynow';
 import { createClient } from '@/lib/supabase/server';
 
 export interface Order {

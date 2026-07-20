@@ -36,7 +36,8 @@ export async function listEvents(): Promise<Event[]> {
     const res = await fetch('/api/events');
     if (res.ok) {
       const api = await res.json();
-      if (Array.isArray(api) && api.length) {
+      const rawEvents: ApiEvent[] = Array.isArray(api) ? api : (api?.events || []);
+      if (rawEvents.length) {
         // fetch categories to map ids to names
         let catMap: Record<number, string> = {};
         try {
@@ -47,7 +48,7 @@ export async function listEvents(): Promise<Event[]> {
           }
         } catch (e) {}
 
-        const mapped = (api as ApiEvent[]).map((e) => {
+        const mapped = rawEvents.map((e) => {
           const tiers = e.ticketTiers || e.ticket_tiers || [];
           const ticketTiers = (tiers).map((t: any) => ({
             id: t.id,
@@ -102,8 +103,9 @@ export async function getEventById(id: string): Promise<Event | null> {
     const res = await fetch('/api/events');
     if (res.ok) {
       const api = await res.json();
-      if (Array.isArray(api)) {
-        const foundApi = (api as ApiEvent[]).find((e) => e.id === id);
+      const rawEvents: ApiEvent[] = Array.isArray(api) ? api : (api?.events || []);
+      if (rawEvents.length) {
+        const foundApi = rawEvents.find((e) => e.id === id);
         if (foundApi) {
           const cres = await fetch('/api/categories');
           const cats = cres.ok ? await cres.json() : [];

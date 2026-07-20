@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { Save, Building2, Banknote, Bell, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { useNotification } from '@/components/ui/notifications';
 import { useAuth } from '@/hooks/use-auth';
 import { getMyOrganizerProfile, updateOrganizerProfile } from '@/actions/organizer';
 
 export default function OrganizerSettingsPage() {
   const { user } = useAuth();
+  const notify = useNotification();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
   const [profile, setProfile] = useState<any>(null);
@@ -69,9 +70,9 @@ export default function OrganizerSettingsPage() {
           mobile_money: mobileMoney,
         });
       }
-      toast.success(`${section === 'profile' ? 'Profile' : 'Banking'} settings saved`);
+      notify.success(`${section === 'profile' ? 'Profile' : 'Banking'} settings saved`);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to save');
+      notify.error(err.message || 'Failed to save');
     } finally {
       setSaving(null);
     }

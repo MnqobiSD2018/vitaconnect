@@ -38,7 +38,7 @@ export default function TermsPage() {
             <h2 className="text-xl font-semibold text-slate-900 mb-3">4. Organizer Obligations</h2>
             <ul className="list-disc pl-5 space-y-2">
               <li>Organizers must provide accurate event information including date, time, venue, and pricing</li>
-              <li>Organizers are responsible for event delivery, including venue access, timing services, and attendee experience</li>
+              <li>Organizers are responsible for event delivery, including venue access, services, and attendee experience</li>
               <li>Payouts are processed within 3 business days after event completion</li>
               <li>VitaConnect charges a 5% service fee on all ticket sales</li>
             </ul>

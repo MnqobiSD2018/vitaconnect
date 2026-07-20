@@ -7,12 +7,24 @@ export async function GET(
 ) {
   const { eventId } = await params;
   const supabase = getServerClient() as any;
-  const { data, error } = await supabase
+
+  let { data, error } = await supabase
     .from('events')
     .select('*, ticket_tiers(*)')
-    .eq('id', eventId)
+    .eq('slug', eventId)
     .limit(1)
     .single();
+
+  if (error || !data) {
+    const result = await supabase
+      .from('events')
+      .select('*, ticket_tiers(*)')
+      .eq('id', eventId)
+      .limit(1)
+      .single();
+    data = result.data;
+    error = result.error;
+  }
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

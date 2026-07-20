@@ -6,10 +6,12 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { getMyOrganizerProfile } from "@/actions/organizer";
 import { getOrganizerEvents, deleteEvent } from "@/actions/events";
+import { useNotification } from "@/components/ui/notifications";
 
 export default function OrganizerEventsPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const notify = useNotification();
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,9 +29,16 @@ export default function OrganizerEventsPage() {
   useEffect(() => { loadEvents(); }, [loadEvents]);
 
   async function handleDelete(id: string) {
-    if (!confirm('Delete this event?')) return;
+    const confirmed = await notify.confirm({
+      title: 'Delete Event',
+      description: 'This action cannot be undone. Are you sure you want to delete this event?',
+      confirmLabel: 'Delete',
+      variant: 'destructive',
+    });
+    if (!confirmed) return;
     try {
       await deleteEvent(id);
+      notify.success('Event deleted');
       setEvents((s) => s.filter((e) => e.id !== id));
     } catch {}
   }

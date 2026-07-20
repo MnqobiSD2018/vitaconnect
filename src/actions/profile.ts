@@ -67,6 +67,15 @@ export async function getDashboardStats(userId: string) {
   };
 }
 
+export async function saveEvent(userId: string, eventId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.from('event_saves').upsert(
+    { user_id: userId, event_id: eventId, saved_at: new Date().toISOString() },
+    { onConflict: 'user_id, event_id' }
+  );
+  if (error) throw new Error(error.message);
+}
+
 export async function getSavedEvents(userId: string) {
   const supabase = await createClient();
   const { data, error } = await supabase

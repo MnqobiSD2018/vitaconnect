@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Bell, Lock, Shield, Trash2, Loader2, Eye, EyeOff } from 'lucide-react';
-import { toast } from 'sonner';
+import { useNotification } from '@/components/ui/notifications';
 import { useAuth } from '@/hooks/use-auth';
 import { updatePassword } from '@/actions/auth';
 
@@ -28,6 +28,7 @@ const Toggle = ({ enabled, onChange }: { enabled: boolean; onChange: () => void 
 export default function SettingsPage() {
   const { user, signOut } = useAuth();
   const router = useRouter();
+  const notify = useNotification();
   const [notifications, setNotifications] = useState({
     purchases: true,
     reminders: true,
@@ -42,7 +43,7 @@ export default function SettingsPage() {
 
   const handleDeleteAccount = async () => {
     setDeleting(true);
-    toast.error('Account deletion is not yet implemented. Please contact support.');
+    notify.error('Account deletion is not yet implemented. Please contact support.');
     setDeleting(false);
   };
 
@@ -114,20 +115,20 @@ export default function SettingsPage() {
               onSubmit={async (e) => {
                 e.preventDefault();
                 if (newPassword.length < 8) {
-                  toast.error('Password must be at least 8 characters');
+                  notify.error('Password must be at least 8 characters');
                   return;
                 }
                 if (newPassword !== confirmPassword) {
-                  toast.error('Passwords do not match');
+                  notify.error('Passwords do not match');
                   return;
                 }
                 setChangingPassword(true);
                 const result = await updatePassword(newPassword);
                 setChangingPassword(false);
                 if (result.error) {
-                  toast.error(result.error);
+                  notify.error(result.error);
                 } else {
-                  toast.success('Password updated successfully');
+                  notify.success('Password updated successfully');
                   setShowPasswordForm(false);
                   setNewPassword('');
                   setConfirmPassword('');

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import getServerClient from '@/lib/supabase/server';
-import Paynow from 'paynow';
+import { Paynow } from 'paynow';
 import { sendTicketConfirmation } from '@/lib/email/resend';
 
 const paynow = new Paynow(

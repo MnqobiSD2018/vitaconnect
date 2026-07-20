@@ -11,6 +11,7 @@ import { saveBusinessInfo } from '@/actions/onboarding';
 export default function StepBusiness() {
   const { businessInfo, updateBusinessInfo, setOrganizerId, organizerId, setStep, completeStep, setSaving, setLastSaved } = useOnboardingStore();
   const [logoPreview, setLogoPreview] = useState(businessInfo.logoUrl);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const {
     register,
@@ -28,9 +29,13 @@ export default function StepBusiness() {
   const onSubmit = async (data: BusinessInfoFormData) => {
     updateBusinessInfo(data);
     setSaving(true);
+    setServerError(null);
     try {
       const result = await saveBusinessInfo({ ...data, organizerId });
-      if (result.error) return;
+      if (result.error) {
+        setServerError(result.error);
+        return;
+      }
       if (result.id) setOrganizerId(result.id);
       setLastSaved(new Date().toISOString());
       completeStep(0);
@@ -44,6 +49,12 @@ export default function StepBusiness() {
     <div>
       <h2 className="text-2xl font-bold text-slate-900 mb-1">Business Information</h2>
       <p className="text-sm text-slate-500 mb-8">Tell us about your organization</p>
+
+      {serverError && (
+        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          {serverError}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

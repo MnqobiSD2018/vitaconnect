@@ -31,33 +31,12 @@ export interface Event {
   customFields: RegistrationField[];
 }
 
-export interface TimingSplit {
-  name: string;
-  time: string;
-}
-
-export interface TimingResult {
-  bib: string;
-  name: string;
-  gender: 'Male' | 'Female';
-  age: number;
-  category: string;
-  status: 'Finished' | 'Running' | 'DNS' | 'DNF';
-  finishTime: string;
-  pace: string;
-  overallRank: number;
-  totalRunners: number;
-  genderRank: number;
-  totalGenderRunners: number;
-  splits: TimingSplit[];
-}
-
 export const MOCK_EVENTS: Event[] = [
    {
     id: 'evt_1',
     title: 'Harare City Marathon 2026',
     slug: 'harare-city-marathon-2026',
-    description: 'The premier athletic event in Zimbabwe. Participate in the Full Marathon, Half Marathon, 10km Run, or 5km Fun Run. The course runs through the historic suburbs of Harare with full support stations and RFID chip electronic timing.',
+    description: 'The premier athletic event in Zimbabwe. Participate in the Full Marathon, Half Marathon, 10km Run, or 5km Fun Run. The course runs through the historic suburbs of Harare with full support stations.',
     date: 'September 13, 2026',
     time: '05:30 AM - 12:00 PM',
     location: 'Harare Sports Club, Harare',
@@ -69,7 +48,7 @@ export const MOCK_EVENTS: Event[] = [
         name: '42.2km Full Marathon',
         price: 25,
         currency: 'USD',
-        description: 'Includes official race timing bib chip, technical running t-shirt, finisher medal, and goodie bag. Min age: 18.',
+        description: 'Includes official race bib, technical running t-shirt, finisher medal, and goodie bag. Min age: 18.',
         available: 150
       },
       {
@@ -77,7 +56,7 @@ export const MOCK_EVENTS: Event[] = [
         name: '21.1km Half Marathon',
         price: 20,
         currency: 'USD',
-        description: 'Includes official race timing bib chip, technical running t-shirt, finisher medal, and goodie bag. Min age: 16.',
+        description: 'Includes official race bib, technical running t-shirt, finisher medal, and goodie bag. Min age: 16.',
         available: 300
       },
       {
@@ -85,7 +64,7 @@ export const MOCK_EVENTS: Event[] = [
         name: '10km Power Run',
         price: 15,
         currency: 'USD',
-        description: 'Includes official race timing bib chip, running t-shirt, and finisher medal. Open to all ages.',
+        description: 'Includes official race bib, running t-shirt, and finisher medal. Open to all ages.',
         available: 500
       },
       {
@@ -253,136 +232,4 @@ export const MOCK_EVENTS: Event[] = [
       }
     ]
   }
-];
-
-export const MOCK_TIMING_RESULTS: TimingResult[] = [
-  {
-    bib: '1042',
-    name: 'Chipo Moyo',
-    gender: 'Female',
-    age: 26,
-    category: '21.1km Half Marathon',
-    status: 'Finished',
-    finishTime: '01:24:32',
-    pace: '4:00 min/km',
-    overallRank: 14,
-    totalRunners: 1200,
-    genderRank: 2,
-    totalGenderRunners: 450,
-    splits: [
-      { name: '5km Split', time: '00:19:50' },
-      { name: '10km Split', time: '00:39:45' },
-      { name: '15km Split', time: '00:59:58' }
-    ]
-  },
-  {
-    bib: '2055',
-    name: 'Tendai Mashingaidze',
-    gender: 'Male',
-    age: 32,
-    category: '42.2km Full Marathon',
-    status: 'Finished',
-    finishTime: '02:18:14',
-    pace: '3:16 min/km',
-    overallRank: 1,
-    totalRunners: 450,
-    genderRank: 1,
-    totalGenderRunners: 380,
-    splits: [
-      { name: '10km Split', time: '00:32:10' },
-      { name: '21.1km Split', time: '01:08:45' },
-      { name: '30km Split', time: '01:38:02' }
-    ]
-  },
-  {
-    bib: '3081',
-    name: 'Sarah Van Der Merwe',
-    gender: 'Female',
-    age: 39,
-    category: '42.2km Full Marathon',
-    status: 'Finished',
-    finishTime: '03:10:45',
-    pace: '4:31 min/km',
-    overallRank: 34,
-    totalRunners: 450,
-    genderRank: 5,
-    totalGenderRunners: 70,
-    splits: [
-      { name: '10km Split', time: '00:44:20' },
-      { name: '21.1km Split', time: '01:33:15' },
-      { name: '30km Split', time: '02:14:10' }
-    ]
-  },
-  {
-    bib: '4112',
-    name: 'Tinashe Zhou',
-    gender: 'Male',
-    age: 28,
-    category: '10km Power Run',
-    status: 'Finished',
-    finishTime: '00:33:45',
-    pace: '3:22 min/km',
-    overallRank: 3,
-    totalRunners: 850,
-    genderRank: 3,
-    totalGenderRunners: 520,
-    splits: [
-      { name: '5km Split', time: '00:16:30' }
-    ]
-  },
-  {
-    bib: '5003',
-    name: 'Ruvarashe Sibanda',
-    gender: 'Female',
-    age: 19,
-    category: '10km Power Run',
-    status: 'Finished',
-    finishTime: '00:41:15',
-    pace: '4:07 min/km',
-    overallRank: 18,
-    totalRunners: 850,
-    genderRank: 1,
-    totalGenderRunners: 330,
-    splits: [
-      { name: '5km Split', time: '00:20:12' }
-    ]
-  },
-  {
-    bib: '1099',
-    name: 'Farai Gumbo',
-    gender: 'Male',
-    age: 45,
-    category: '21.1km Half Marathon',
-    status: 'Finished',
-    finishTime: '01:45:22',
-    pace: '4:59 min/km',
-    overallRank: 184,
-    totalRunners: 1200,
-    genderRank: 132,
-    totalGenderRunners: 750,
-    splits: [
-      { name: '5km Split', time: '00:24:10' },
-      { name: '10km Split', time: '00:49:15' },
-      { name: '15km Split', time: '01:14:30' }
-    ]
-  },
-  {
-    bib: '1150',
-    name: 'Nkosilathi Dube',
-    gender: 'Male',
-    age: 31,
-    category: '21.1km Half Marathon',
-    status: 'Running',
-    finishTime: '--:--:--',
-    pace: '4:45 min/km',
-    overallRank: 0,
-    totalRunners: 1200,
-    genderRank: 0,
-    totalGenderRunners: 750,
-    splits: [
-      { name: '5km Split', time: '00:22:40' },
-      { name: '10km Split', time: '00:46:12' }
-    ]
-  }
-
 ];

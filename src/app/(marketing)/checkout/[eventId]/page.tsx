@@ -11,7 +11,7 @@ import { CheckoutForm } from "@/components/checkout/checkout-form"
 import { PaymentMethod } from "@/components/checkout/payment-method"
 import { OrderSummary } from "@/components/checkout/order-summary"
 
-import { toast } from "sonner"
+import { useNotification } from "@/components/ui/notifications"
 import { ChevronLeft, LockKeyhole, UserCircle2, Loader2, CheckCircle2 } from "lucide-react"
 
 interface CheckoutEvent {
@@ -36,6 +36,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ eventId: st
   const { eventId } = use(params);
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const notify = useNotification();
 
   const [event, setEvent] = useState<CheckoutEvent | null>(null);
   const [eventLoading, setEventLoading] = useState(true);
@@ -78,7 +79,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ eventId: st
     if (!user || !event) return;
 
     if (!formData.fullName || !formData.email || !formData.phone) {
-      toast.error("Please fill in all required attendee details.");
+      notify.error("Please fill in all required attendee details.");
       return;
     }
 
@@ -87,7 +88,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ eventId: st
       .map(([tierId, quantity]) => ({ tierId, quantity }));
 
     if (items.length === 0) {
-      toast.error("Please select at least one ticket.");
+      notify.error("Please select at least one ticket.");
       return;
     }
 
@@ -109,7 +110,7 @@ export default function CheckoutPage({ params }: { params: Promise<{ eventId: st
       const payment = await initiatePaymentAction(result.orderId);
       window.location.href = payment.redirectUrl;
     } catch (err: any) {
-      toast.error(err?.message || "Something went wrong. Please try again.");
+      notify.error(err?.message || "Something went wrong. Please try again.");
     } finally {
       setIsProcessing(false);
     }

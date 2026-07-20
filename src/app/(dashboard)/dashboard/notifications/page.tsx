@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Bell, CheckCheck, Loader2, Inbox } from 'lucide-react';
-import { toast } from 'sonner';
+import { useNotification } from '@/components/ui/notifications';
 import { getNotifications, markNotificationRead, markAllRead } from '@/actions/notifications';
 
 interface Notification {
@@ -27,6 +27,7 @@ const typeIcons: Record<string, string> = {
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const notify = useNotification();
 
   useEffect(() => {
     getNotifications().then((data) => {
@@ -42,7 +43,7 @@ export default function NotificationsPage() {
   const handleMarkAllRead = async () => {
     await markAllRead();
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
-    toast.success('All notifications marked as read');
+    notify.success('All notifications marked as read');
   };
 
   const unreadCount = notifications.filter((n) => !n.is_read).length;

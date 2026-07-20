@@ -2,22 +2,23 @@
 
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Loader2, Send } from 'lucide-react';
-import { toast } from 'sonner';
+import { useNotification } from '@/components/ui/notifications';
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [sending, setSending] = useState(false);
+  const notify = useNotification();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) {
-      toast.error('Please fill in all required fields.');
+      notify.error('Please fill in all required fields.');
       return;
     }
     setSending(true);
     // Placeholder — integrates with email/notification system
     await new Promise((r) => setTimeout(r, 1000));
-    toast.success('Message sent! We\'ll get back to you soon.');
+    notify.success('Message sent! We\'ll get back to you soon.');
     setForm({ name: '', email: '', subject: '', message: '' });
     setSending(false);
   };
@@ -76,14 +77,14 @@ export default function ContactPage() {
               <Phone className="mt-0.5 h-5 w-5 text-teal-600 shrink-0" />
               <div>
                 <div className="text-sm font-medium text-slate-900">Phone</div>
-                <div className="text-sm text-slate-600">+263 777 980 062 / +263 719 591 300</div>
+                <div className="text-sm text-slate-600">+263 777 777 777 / +263 777 777 777</div>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <MapPin className="mt-0.5 h-5 w-5 text-teal-600 shrink-0" />
               <div>
                 <div className="text-sm font-medium text-slate-900">Address</div>
-                <div className="text-sm text-slate-600">Harare Sports Club Premises, Harare, Zimbabwe</div>
+                <div className="text-sm text-slate-600">Harare, Zimbabwe</div>
               </div>
             </div>
           </div>

@@ -1,15 +1,14 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { Shield, Ticket, Cpu, Users } from 'lucide-react';
+import { Shield, Ticket, Users } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'About | VitaConnect',
-  description: 'Zimbabwe\'s leading event management, ticketing, and live timing platform.',
+  description: 'Zimbabwe\'s leading event management and ticketing platform.',
 };
 
 const values = [
   { icon: Ticket, title: 'Seamless Ticketing', desc: 'Instant digital tickets with QR codes, Paynow and EcoCash payments, and real-time availability.' },
-  { icon: Cpu, title: 'RFID Live Timing', desc: 'Chip-based timing for marathons and races with live results accessible to participants and spectators.' },
   { icon: Shield, title: 'Trust & Security', desc: 'Secure payments, encrypted QR codes, and fraud protection for organizers and attendees.' },
   { icon: Users, title: 'Community First', desc: 'Built for Zimbabwe — supporting local payment methods and serving organizers nationwide.' },
 ];
@@ -21,7 +20,7 @@ export default function AboutPage() {
         <h1 className="text-4xl font-bold tracking-tight text-slate-900">About VitaConnect</h1>
         <p className="mt-4 text-lg text-slate-600">
           VitaConnect is Zimbabwe&#39;s next-generation event technology platform. We provide organizers with the tools to
-          sell tickets, manage attendees, process local payments, and deliver live timing — all in one place.
+          sell tickets, manage attendees, process local payments, and handle registrations — all in one place.
         </p>
 
         <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2">

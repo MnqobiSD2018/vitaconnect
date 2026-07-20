@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Search, Calendar, MapPin, ArrowUpRight, Filter, Loader2 } from "lucide-react";
+import SaveEventButton from "@/components/SaveEventButton";
 
 interface ApiEvent {
   id: string;
@@ -142,6 +143,9 @@ export default function BrowseEventsPage() {
                           {event.category}
                         </div>
                       )}
+                      <div className="absolute top-4 right-4 z-10">
+                        <SaveEventButton eventId={event.id} className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/90 backdrop-blur-sm border-0 hover:bg-white transition-colors shadow-sm" />
+                      </div>
                     </div>
 
                     <div className="p-6 flex flex-col flex-1">

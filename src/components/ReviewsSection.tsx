@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Star, Loader2, MessageSquare } from 'lucide-react';
-import { toast } from 'sonner';
+import { useNotification } from '@/components/ui/notifications';
 import { getEventReviews, submitReview, getAvgRating } from '@/actions/reviews';
 import { useAuth } from '@/hooks/use-auth';
 import Link from 'next/link';
@@ -18,6 +18,7 @@ interface Review {
 
 export default function ReviewsSection({ eventId }: { eventId: string }) {
   const { user } = useAuth();
+  const notify = useNotification();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [avgRating, setAvgRating] = useState(0);
   const [reviewCount, setReviewCount] = useState(0);
@@ -39,12 +40,12 @@ export default function ReviewsSection({ eventId }: { eventId: string }) {
   }, [eventId]);
 
   const handleSubmit = async () => {
-    if (rating === 0) { toast.error('Please select a rating'); return; }
-    if (!comment.trim()) { toast.error('Please write a review'); return; }
+    if (rating === 0) { notify.error('Please select a rating'); return; }
+    if (!comment.trim()) { notify.error('Please write a review'); return; }
     setSubmitting(true);
     try {
       await submitReview(eventId, rating, comment);
-      toast.success('Review submitted!');
+      notify.success('Review submitted!');
       setRating(0);
       setComment('');
       const [revs, avg] = await Promise.all([
@@ -55,7 +56,7 @@ export default function ReviewsSection({ eventId }: { eventId: string }) {
       setAvgRating(avg.avg);
       setReviewCount(avg.count);
     } catch (err: any) {
-      toast.error(err.message);
+      notify.error(err.message);
     } finally {
       setSubmitting(false);
     }
